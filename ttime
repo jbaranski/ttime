@@ -1,0 +1,50 @@
+#!/usr/bin/env -S uv run --script
+#
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#    "rich",
+#    "typer"
+# ]
+# ///
+import typer
+from datetime import datetime, timezone
+from rich.console import Console
+from rich.table import Table
+
+app = typer.Typer()
+console = Console()
+
+
+@app.command()
+def ttime():
+    now = datetime.now().astimezone()
+    now_utc = now.astimezone(timezone.utc)
+
+    table = Table(show_header=False)
+    table.add_column("kind", style="blue")
+    table.add_column("time")
+    # table.add_column("local", style="blue")
+    # table.add_column("local24", style="blue")
+    # table.add_column("utc", style="blue")
+    # table.add_column("utc24", )
+    table.add_row(
+        'local',
+        f'{now.strftime("%m/%d/%Y %I:%M:%S.%f")[:-4]} {now.strftime("%p %Z")}'
+    )
+    table.add_row(
+        'local24',
+        f'{now.strftime("%m/%d/%Y %H:%M:%S.%f")[:-4]} {now.strftime("%Z")}',
+    )
+    table.add_row(
+        'utc',
+        f'{now_utc.strftime("%m/%d/%Y %I:%M:%S.%f")[:-4]} {now_utc.strftime("%p %Z")}',
+    )
+    table.add_row(
+        'utc24',
+        f'{now_utc.strftime("%m/%d/%Y %H:%M:%S.%f %Z")[:-4]}'
+    )
+    console.print(table)
+
+if __name__ == "__main__":
+    app()
