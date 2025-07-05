@@ -1,50 +1,70 @@
 #!/usr/bin/env -S uv run --script
 #
 # /// script
-# requires-python = ">=3.12"
+# requires-python = ">=3.13"
 # dependencies = [
+#    "python-dateutil",
 #    "rich",
 #    "typer"
 # ]
 # ///
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
+
 import typer
-from datetime import datetime, timezone
+from dateutil.parser import parse
 from rich.console import Console
 from rich.table import Table
+from rich.tree import Tree
+
 
 app = typer.Typer()
 console = Console()
 
 
-@app.command()
-def ttime():
-    now = datetime.now().astimezone()
-    now_utc = now.astimezone(timezone.utc)
-
+def _ttime(tree_label: str, now: datetime, now_utc: datetime, local_label='local') -> None:
+    tree = Tree(tree_label)
     table = Table(show_header=False)
-    table.add_column("kind", style="blue")
-    table.add_column("time")
-    # table.add_column("local", style="blue")
-    # table.add_column("local24", style="blue")
-    # table.add_column("utc", style="blue")
-    # table.add_column("utc24", )
-    table.add_row(
-        'local',
-        f'{now.strftime("%m/%d/%Y %I:%M:%S.%f")[:-4]} {now.strftime("%p %Z")}'
-    )
-    table.add_row(
-        'local24',
-        f'{now.strftime("%m/%d/%Y %H:%M:%S.%f")[:-4]} {now.strftime("%Z")}',
-    )
-    table.add_row(
-        'utc',
-        f'{now_utc.strftime("%m/%d/%Y %I:%M:%S.%f")[:-4]} {now_utc.strftime("%p %Z")}',
-    )
-    table.add_row(
-        'utc24',
-        f'{now_utc.strftime("%m/%d/%Y %H:%M:%S.%f %Z")[:-4]}'
-    )
-    console.print(table)
+    table.add_column('Now', style='blue')
+    table.add_column('')
+    table.add_row(local_label, f'{now.strftime("%m/%d/%Y %I:%M:%S.%f%z")}')
+    table.add_row('', '')
+    table.add_row(f'{local_label}24', f'{now.strftime("%m/%d/%Y %H:%M:%S.%f%z")}')
+    table.add_row('', '')
+    table.add_row('utc', f'{now_utc.strftime("%m/%d/%Y %I:%M:%S.%f%z")}')
+    table.add_row('', '')
+    table.add_row('utc24', f'{now_utc.strftime("%m/%d/%Y %H:%M:%S.%f%z")}')
+    tree.add(table)
+    console.print(tree)
 
-if __name__ == "__main__":
+
+@app.command()
+def ttime(now: bool = True,
+          minus: int = 0,
+          plus: int = 0,
+          plus_minus_uom: str = 'days',
+          date: str | None = None,
+          date_tz: str | None = None) -> None:
+    now_dt = datetime.now().astimezone()
+    now_dt_utc = now_dt.astimezone(timezone.utc)
+    if now:
+        _ttime('Now', now_dt, now_dt_utc)
+    if minus > 0:
+        now_minus = now_dt - timedelta(**{plus_minus_uom: minus})
+        now_minus_utc = now_minus.astimezone(timezone.utc)
+        _ttime(f'Now - {minus} {plus_minus_uom}', now_minus, now_minus_utc)
+    if plus > 0:
+        now_plus = now_dt + timedelta(**{plus_minus_uom: plus})
+        now_plus_utc = now_plus.astimezone(timezone.utc)
+        _ttime(f'Now + {plus} {plus_minus_uom}', now_plus, now_plus_utc)
+    if date:
+        dt = parse(date).astimezone() if not date_tz else parse(date).astimezone(ZoneInfo(date_tz))
+        dt_utc = dt.astimezone(timezone.utc)
+        if date_tz:
+            _ttime(date, dt, dt_utc, date_tz.lower())
+        else:
+            _ttime(date, dt, dt_utc)
+
+
+if __name__ == '__main__':
     app()
