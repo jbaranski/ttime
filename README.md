@@ -13,7 +13,7 @@ Remove the mental overhead of converting timestamps across different time zones 
 ## Example usage
 - Run `ttime --help`
 ```
-[06/07/25 12:19:58] jeff@marlboro ~/development/ttime main > ttime --help
+[06/07/25 12:19:58] jeff@marlboro ~  > ttime --help
 
  Usage: ttime [OPTIONS]
 
@@ -30,7 +30,7 @@ Remove the mental overhead of converting timestamps across different time zones 
 ```
 - Run `ttime`
 ```
-[06/07/25 12:16:03] jeff@marlboro ~/development/ttime main > ttime
+[06/07/25 12:16:03] jeff@marlboro ~  > ttime
 Now
 └── ┌───────────────┬────┬─────────────────────────────────┐
     │ -0400 (local) │ 12 │ 07/06/2025 12:16:23.021192-0400 │
@@ -44,7 +44,7 @@ Now
 ```
 - Run `ttime --minus 4`
 ```
-[06/07/25 12:16:23] jeff@marlboro ~/development/ttime main > ttime --minus 4
+[06/07/25 12:16:23] jeff@marlboro ~  > ttime --minus 4
 Now
 └── ┌───────────────┬────┬─────────────────────────────────┐
     │ -0400 (local) │ 12 │ 07/06/2025 12:16:40.544402-0400 │
@@ -68,7 +68,7 @@ Now - 4 days
 ```
 - Run `ttime --plus 4 --plus-minus-uom minutes`
 ```
-[06/07/25 12:16:40] jeff@marlboro ~/development/ttime main > ttime --plus 4 --plus-minus-uom minutes
+[06/07/25 12:16:40] jeff@marlboro ~  > ttime --plus 4 --plus-minus-uom minutes
 Now
 └── ┌───────────────┬────┬─────────────────────────────────┐
     │ -0400 (local) │ 12 │ 07/06/2025 12:16:55.329731-0400 │
@@ -92,7 +92,7 @@ Now + 4 minutes
 ```
 - Run `ttime --date "2025-07-04 14:32:17.456" --no-now`
 ```
-[06/07/25 12:17:39] jeff@marlboro ~/development/ttime main > ttime --date "2025-07-04 14:32:17.456" --no-now
+[06/07/25 12:17:39] jeff@marlboro ~  > ttime --date "2025-07-04 14:32:17.456" --no-now
 2025-07-04 14:32:17.456
 └── ┌───────────────┬────┬─────────────────────────────────┐
     │ -0400 (local) │ 12 │ 07/04/2025 02:32:17.456000-0400 │
@@ -106,7 +106,7 @@ Now + 4 minutes
 ```
 - Run `ttime --date "2025-07-04T16:23:45.678+00:00" --date-tz 'US/Pacific' --no-now`
 ```
-[06/07/25 12:17:40] jeff@marlboro ~/development/ttime main > ttime --date "2025-07-04T16:23:45.678+00:00" --no-now
+[06/07/25 12:17:40] jeff@marlboro ~  > ttime --date "2025-07-04T16:23:45.678+00:00" --no-now
 2025-07-04T16:23:45.678+00:00
 └── ┌───────────────┬────┬─────────────────────────────────┐
     │ -0400 (local) │ 12 │ 07/04/2025 12:23:45.678000-0400 │
@@ -120,7 +120,7 @@ Now + 4 minutes
 ```
 - Run `ttime --date "Jul 06 15:23:41 PST 2024"`
 ```
-[06/07/25 12:18:34] jeff@marlboro ~/development/ttime main > ttime --date "Jul 06 15:23:41 PST 2024"
+[06/07/25 12:18:34] jeff@marlboro ~  > ttime --date "Jul 06 15:23:41 PST 2024"
 Now
 └── ┌───────────────┬────┬─────────────────────────────────┐
     │ -0400 (local) │ 12 │ 07/06/2025 12:18:40.852838-0400 │
