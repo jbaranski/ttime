@@ -5,6 +5,7 @@ CLI that displays the current time in multiple formats simultaneously - local 12
 Remove the mental overhead of converting timestamps across different time zones when debugging issues in distributed systems with multiple log sources.
 
 ## Installing
+- Install [Python](https://www.python.org/) and [uv](https://docs.astral.sh/uv/)
 - Put `~/.local/bin` on your system path.
 - Run `make install`
 - Run `ttime`
@@ -12,8 +13,7 @@ Remove the mental overhead of converting timestamps across different time zones 
 ## Example usage
 - Run `ttime --help`
 ```
-[06/07/25 12:16:00] jeff@marlboro ~/development/ttime main > ttime --help
-Installed 1 package in 9ms
+[06/07/25 12:19:58] jeff@marlboro ~/development/ttime main > ttime --help
 
  Usage: ttime [OPTIONS]
 
