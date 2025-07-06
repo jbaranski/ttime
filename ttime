@@ -4,36 +4,70 @@
 # requires-python = ">=3.13"
 # dependencies = [
 #    "python-dateutil",
+#    "pytz",
 #    "rich",
 #    "typer"
 # ]
 # ///
+import pytz
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 import typer
+from dateutil import tz
 from dateutil.parser import parse
 from rich.console import Console
 from rich.table import Table
 from rich.tree import Tree
 
 
+# TODO:
+#
+# Since we accept arbitrary timezones from log files that don't confirm to any specific format or the format is out of our control,
+# create a mapping for the parser otherwise it complains about ambigious timezone inputs
+#
+# I'm this can be improved for a robust worldwide solution, but it's "good enough" for me for now
+tzinfos = {
+    'PST': tz.gettz('US/Pacific'),
+    'PDT': tz.gettz('US/Pacific'),
+    'EST': tz.gettz('US/Eastern'),
+    'EDT': tz.gettz('US/Eastern'),
+    'CST': tz.gettz('US/Central'),
+    'CDT': tz.gettz('US/Central'),
+    'MST': tz.gettz('US/Mountain'),
+    'MDT': tz.gettz('US/Mountain'),
+    'UTC': tz.UTC,
+    'GMT': tz.UTC,
+}
+
 app = typer.Typer()
 console = Console()
 
 
-def _ttime(tree_label: str, now: datetime, now_utc: datetime, local_label='local') -> None:
+def _ttime(tree_label: str, d1: datetime, d1_utc: datetime, d1_input: datetime = None) -> None:
     tree = Tree(tree_label)
     table = Table(show_header=False)
-    table.add_column('Now', style='dodger_blue1')
-    table.add_column('')
-    table.add_row(local_label, f'{now.strftime("%m/%d/%Y %I:%M:%S.%f%z")}')
-    table.add_row('', '')
-    table.add_row(f'{local_label}24', f'{now.strftime("%m/%d/%Y %H:%M:%S.%f%z")}')
-    table.add_row('', '')
-    table.add_row('utc', f'{now_utc.strftime("%m/%d/%Y %I:%M:%S.%f%z")}')
-    table.add_row('', '')
-    table.add_row('utc24', f'{now_utc.strftime("%m/%d/%Y %H:%M:%S.%f%z")}')
+    table.add_column('timezone', style='dodger_blue1')
+    table.add_column('12/24', style='dodger_blue1 dim')
+    table.add_column('datetime')
+    seen_tzs = {d1.strftime('%z'), d1_utc.strftime('%z')}
+    dts = [(d1, d1.strftime('%z'), '(local)'), (d1_utc, d1_utc.strftime('%z'), '(utc)')]
+    if d1_input:
+        d1_input_tz = d1_input.strftime('%z')
+        if d1_input_tz and d1_input_tz not in seen_tzs:
+            dts.append((d1_input, d1_input_tz, '(raw input)'))
+
+    L = len(dts) - 1
+    for i in range(len(dts)):
+        dt, tz, tz_suffix = dts[i]
+        if dt and tz:
+            tz_str = f'{tz} {tz_suffix}'
+            table.add_row(tz_str, '12', dt.strftime('%m/%d/%Y %I:%M:%S.%f%z'))
+            table.add_row('', '', '')
+            table.add_row(tz_str, '24', dt.strftime('%m/%d/%Y %H:%M:%S.%f%z'))
+            if i < L:
+                table.add_row('', '', '')
+
     tree.add(table)
     console.print(tree)
 
@@ -43,8 +77,7 @@ def ttime(now: bool = True,
           minus: int = 0,
           plus: int = 0,
           plus_minus_uom: str = 'days',
-          date: str | None = None,
-          date_tz: str | None = None) -> None:
+          date: str | None = None) -> None:
     now_dt = datetime.now().astimezone()
     now_dt_utc = now_dt.astimezone(timezone.utc)
     if now:
@@ -58,12 +91,10 @@ def ttime(now: bool = True,
         now_plus_utc = now_plus.astimezone(timezone.utc)
         _ttime(f'Now + {plus} {plus_minus_uom}', now_plus, now_plus_utc)
     if date:
-        dt = parse(date).astimezone() if not date_tz else parse(date).astimezone(ZoneInfo(date_tz))
-        dt_utc = dt.astimezone(timezone.utc)
-        if date_tz:
-            _ttime(date, dt, dt_utc, date_tz.lower())
-        else:
-            _ttime(date, dt, dt_utc)
+        dt_input = parse(date, tzinfos=tzinfos)
+        dt_local = dt_input.astimezone()
+        dt_utc = dt_local.astimezone(timezone.utc)
+        _ttime(date, dt_local, dt_utc, dt_input)
 
 
 if __name__ == '__main__':
