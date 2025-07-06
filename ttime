@@ -25,7 +25,7 @@ console = Console()
 def _ttime(tree_label: str, now: datetime, now_utc: datetime, local_label='local') -> None:
     tree = Tree(tree_label)
     table = Table(show_header=False)
-    table.add_column('Now', style='blue')
+    table.add_column('Now', style='dodger_blue1')
     table.add_column('')
     table.add_row(local_label, f'{now.strftime("%m/%d/%Y %I:%M:%S.%f%z")}')
     table.add_row('', '')
