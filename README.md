@@ -2,7 +2,7 @@
 CLI that displays the current time in multiple formats simultaneously - local 12-hour, local 24-hour, UTC 12-hour, and UTC 24-hour. Supports an optional plus and/or minus offset. Supports accepting explicit date strings (like from various log sources).
 
 ## Why?
-Remove the mental overhead of converting timestamps across different time zones when debugging issues in large-scale distributed systems with multiple log sources.
+Remove the mental overhead of converting timestamps across different time zones when debugging issues in distributed systems with multiple log sources.
 
 ## Installing
 - Put `~/.local/bin` on your system path.
